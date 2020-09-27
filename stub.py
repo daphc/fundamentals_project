@@ -5,41 +5,49 @@ import numpy as np
 def collect_by_year():
     """ get ids of structures that were released in a particular year """
     # data = pandas.read_csv("https://www.rcsb.org/pdb/rest/customReport.csv?pdbids=*&customReportColumns=structureId,releaseDate,molecularWeight&format=csv&service=wsfile")
-    ## this has 625,129 structures 
+    ## this has 625,129 structures
 
     years_ids = {} #keys are the years. values are lists of pdb ids
-    #test link:
-    # data = pandas.read_csv("https://www.rcsb.org/pdb/rest/customReport.csv?pdbids=100D,4HYA,3IRL&customReportColumns=structureId,releaseDate,molecularWeight&format=csv&service=wsfile")
+    # test link:
+    # data = pandas.read_csv("https://www.rcsb.org/pdb/rest/customReport.csv?pdbids=100D,4HYA,3IRL&customReportColumns=structureId,releaseDate,structureMolecularWeight,macromoleculeType&format=csv&service=wsfile")
     ## test data
 
-    data = pandas.read_csv("http://www.rcsb.org/pdb/rest/customReport.csv?pdbids=*&customReportColumns=structureId,structureMolecularWeight,releaseDate&service=wsfile&format=csv")
-    ## above data has 173,223 strucutures. So far this is closest to what the RCSB website has for strucutures 
-    new_data = data.dropna() ## removes all data points with NaN this new_data has  173,141 structures
+    #data = pandas.read_csv("http://www.rcsb.org/pdb/rest/customReport.csv?pdbids=*&customReportColumns=structureId,structureMolecularWeight,releaseDate&service=wsfile&format=csv")
+    ## above data has 173,223 strucutures. So far this is closest to what the RCSB website has for strucutures
 
+    # data = pandas.read_csv("http://www.rcsb.org/pdb/rest/customReport.csv?pdbids=1stp,2jef,1cdg&customReportColumns=structureId,releaseDate,structureMolecularWeight,macromoleculeType&service=wsfile&format=csv")
+    data = pandas.read_csv("http://www.rcsb.org/pdb/rest/customReport.csv?pdbids=*&customReportColumns=structureId,releaseDate,structureMolecularWeight,macromoleculeType&service=wsfile&format=csv")
+    new_data = data.dropna()
+    print(new_data.head(10))
     # data = pandas.read_csv('./PDB_data.csv') ## pulls from file 140,480 strucutures
     # print (data.tail(n=10))
     # sort_by_year = new_data.sort_values('releaseDate') ## this sorts everything by data for new_data
-    print('This is data without Na\n', new_data.tail(n=10))
-    print ('This is data with Na\n', data.tail(n=10))
-    print ('This is length of without Na\n', len(new_data))
+    # print('This is data without Na\n', new_data.tail(n=10))
+    # print ('This is data with Na\n', data.tail(n=10))
+    # print ('This is length of without Na\n', len(new_data))
 
-
-
-    # #Investigate NaN displayed -- maybe we need to ask for a diffferent property, not molecularWeight
-    # for index, row in data.iterrows():
-    #      if row[2] not in years_ids.keys(): #year not in dictionary
-    #         print("new year and PDB ID added to dictionary.")
-    #         years_ids[row[2]] = [row[0]]
-    #      elif row[2] in years_ids.keys() and row[0] not in years_ids[row[2]]: #year in dictionary but a pdb id from that year isn't
-    #         print("new PDB ID added to already existing year.")
-    #         years_ids[row[2]].append(row[0])
-    #      elif row[2] in years_ids.keys() and row[0] in years_ids[row[2]]:
-    #         print("Duplicate skipped.")
-    #      else:
-    #         print("Something went wrong.")
-    #     # need to incorporate error handling for NaN molecular weight.
-    # print(years_ids)
-    # #append to years_ids.
+    for index, row in new_data.iterrows():
+         if "Protein" not in row[3]:
+             pass
+         elif row[1] not in years_ids.keys(): #year not in dictionary
+            # print("new year and PDB ID added to dictionary.")
+            years_ids[row[1]] = [row[0]]
+         elif row[1] in years_ids.keys() and row[0] not in years_ids[row[1]]: #year in dictionary but a pdb id from that year isn't
+            # print("new PDB ID added to already existing year.")
+            years_ids[row[1]].append(row[0])
+         elif row[1] in years_ids.keys() and row[0] in years_ids[row[1]]:
+             pass
+            # print("Duplicate skipped.")
+         else:
+            print("Something went wrong.")
+    counting_list = []
+    for list in years_ids.values():
+        for i in range(0, len(list)):
+            if list[i] in counting_list:
+                pass
+            else:
+                counting_list.append(list[i])
+    print("There are", len(counting_list), "structures")
 
 def get_avg_mw(dates_files):
     """ get the average molecular weight from structures released in a particular year """
