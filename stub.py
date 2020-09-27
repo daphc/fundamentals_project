@@ -4,26 +4,42 @@ import numpy as np
 
 def collect_by_year():
     """ get ids of structures that were released in a particular year """
-    #all PDBS: data = pandas.read_csv("https://www.rcsb.org/pdb/rest/customReport.csv?pdbids=*&customReportColumns=structureId,releaseDate,molecularWeight&format=csv&service=wsfile")
+    # data = pandas.read_csv("https://www.rcsb.org/pdb/rest/customReport.csv?pdbids=*&customReportColumns=structureId,releaseDate,molecularWeight&format=csv&service=wsfile")
+    ## this has 625,129 structures 
+
     years_ids = {} #keys are the years. values are lists of pdb ids
     #test link:
-    data = pandas.read_csv("https://www.rcsb.org/pdb/rest/customReport.csv?pdbids=100D,4HYA,3IRL&customReportColumns=structureId,releaseDate,molecularWeight&format=csv&service=wsfile")
-    print(data.head())
-    #Investigate NaN displayed -- maybe we need to ask for a diffferent property, not molecularWeight
-    for index, row in data.iterrows():
-         if row[2] not in years_ids.keys(): #year not in dictionary
-            print("new year and PDB ID added to dictionary.")
-            years_ids[row[2]] = [row[0]]
-         elif row[2] in years_ids.keys() and row[0] not in years_ids[row[2]]: #year in dictionary but a pdb id from that year isn't
-            print("new PDB ID added to already existing year.")
-            years_ids[row[2]].append(row[0])
-         elif row[2] in years_ids.keys() and row[0] in years_ids[row[2]]:
-            print("Duplicate skipped.")
-         else:
-            print("Something went wrong.")
-        # need to incorporate error handling for NaN molecular weight.
-    print(years_ids)
-    #append to years_ids.
+    # data = pandas.read_csv("https://www.rcsb.org/pdb/rest/customReport.csv?pdbids=100D,4HYA,3IRL&customReportColumns=structureId,releaseDate,molecularWeight&format=csv&service=wsfile")
+    ## test data
+
+    data = pandas.read_csv("http://www.rcsb.org/pdb/rest/customReport.csv?pdbids=*&customReportColumns=structureId,structureMolecularWeight,releaseDate&service=wsfile&format=csv")
+    ## above data has 173,223 strucutures. So far this is closest to what the RCSB website has for strucutures 
+    new_data = data.dropna() ## removes all data points with NaN this new_data has  173,141 structures
+
+    # data = pandas.read_csv('./PDB_data.csv') ## pulls from file 140,480 strucutures
+    # print (data.tail(n=10))
+    # sort_by_year = new_data.sort_values('releaseDate') ## this sorts everything by data for new_data
+    print('This is data without Na\n', new_data.tail(n=10))
+    print ('This is data with Na\n', data.tail(n=10))
+    print ('This is length of without Na\n', len(new_data))
+
+
+
+    # #Investigate NaN displayed -- maybe we need to ask for a diffferent property, not molecularWeight
+    # for index, row in data.iterrows():
+    #      if row[2] not in years_ids.keys(): #year not in dictionary
+    #         print("new year and PDB ID added to dictionary.")
+    #         years_ids[row[2]] = [row[0]]
+    #      elif row[2] in years_ids.keys() and row[0] not in years_ids[row[2]]: #year in dictionary but a pdb id from that year isn't
+    #         print("new PDB ID added to already existing year.")
+    #         years_ids[row[2]].append(row[0])
+    #      elif row[2] in years_ids.keys() and row[0] in years_ids[row[2]]:
+    #         print("Duplicate skipped.")
+    #      else:
+    #         print("Something went wrong.")
+    #     # need to incorporate error handling for NaN molecular weight.
+    # print(years_ids)
+    # #append to years_ids.
 
 def get_avg_mw(dates_files):
     """ get the average molecular weight from structures released in a particular year """
