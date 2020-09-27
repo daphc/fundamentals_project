@@ -1,14 +1,12 @@
 import pandas
 import matplotlib.pyplot as mpl
 import numpy as np
+from statistics import mean
 
-def collect_by_year():
+def collect_by_year(dataframe):
     """ get ids of structures that were released in a particular year """
-    # test: data = pandas.read_csv("http://www.rcsb.org/pdb/rest/customReport.csv?pdbids=1stp,2jef,1cdg&customReportColumns=structureId,releaseDate,structureMolecularWeight,macromoleculeType&service=wsfile&format=csv")
     years_ids = {} #keys are the years. values are lists of pdb ids
-    data = pandas.read_csv("http://www.rcsb.org/pdb/rest/customReport.csv?pdbids=*&customReportColumns=structureId,releaseDate,structureMolecularWeight,macromoleculeType&service=wsfile&format=csv")
-    final_data = data.dropna()
-    for index, row in final_data.iterrows():
+    for index, row in dataframe.iterrows():
          year = row[1][0:4]
          if year not in years_ids.keys(): #year not in dictionary
             # print("new year and PDB ID added to dictionary.")
@@ -29,23 +27,34 @@ def collect_by_year():
             else:
                 counting_list.append(list[i])
     print("There are", len(counting_list), "structures")
-    print(final_data.shape)
     return years_ids
 
-def get_avg_mw(dates_files):
+def get_avg_mw(dates_files, dataframe):
     """ get the average molecular weight from structures released in a particular year """
-    #from years_ids, extract the average molecular weight and append to years_mw.
+    years_mw = {} #keys are the years. values are the avg molecular weight from each year.
+    for year, lists in dates_files.items():
+        weights = []
+        for id in lists:
+            row = dataframe.loc[dataframe["structureId"] == id]
+            weight = float(row["structureMolecularWeight"])
+            weights.append(weight)
+        avg = mean(weights)
+        years_mw[year] = avg
+    print(years_mw)
+    return years_mw
 
 def get_num_struct(dates_files):
     """ get the number of released structures from a particular year """
+    years_num = {} #keys are the years. values are the number of structures from each year.
     #from years_ids, get the number of structures and append to years_num.
 
 def main():
     """ gather the relevant quantities and make the plot """
-    years_mw = {} #keys are the years. values are the avg molecular weight from each year.
-    years_num = {} #keys are the years. values are the number of structures from each year.
-    entries = collect_by_year()
-    # get_avg_mw(entries)
+    # data = pandas.read_csv("http://www.rcsb.org/pdb/rest/customReport.csv?pdbids=1stp,2jef,1cdg&customReportColumns=structureId,releaseDate,structureMolecularWeight,macromoleculeType&service=wsfile&format=csv")
+    data = pandas.read_csv("http://www.rcsb.org/pdb/rest/customReport.csv?pdbids=*&customReportColumns=structureId,releaseDate,structureMolecularWeight,macromoleculeType&service=wsfile&format=csv")
+    final_data = data.dropna()
+    entries = collect_by_year(final_data)
+    average_weight = get_avg_mw(entries, final_data)
     # get_num_struct(entries)
     #plotting: x values are dictionary keys, y values are key values
 
