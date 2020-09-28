@@ -1,3 +1,4 @@
+
 import pandas
 import matplotlib.pyplot as mpl
 import numpy as np
@@ -45,8 +46,14 @@ def get_avg_mw(dates_files, dataframe):
 
 def get_num_struct(dates_files):
     """ get the number of released structures from a particular year """
-    years_num = {} #keys are the years. values are the number of structures from each year.
     #from years_ids, get the number of structures and append to years_num.
+    a = []
+    for keys,values in dates_files.items():
+        b = keys, len(list(filter(None, values))) ## takes keys and counts the values in said key
+        a.append (b)
+    data = pandas.DataFrame (data=a) ## makes a data Fram for future graphing
+    # print (data)
+    return data
 
 def main():
     """ gather the relevant quantities and make the plot """
@@ -55,7 +62,7 @@ def main():
     final_data = data.dropna()
     entries = collect_by_year(final_data)
     average_weight = get_avg_mw(entries, final_data)
-    # get_num_struct(entries)
+    get_num_struct(entries)
     #plotting: x values are dictionary keys, y values are key values
 
 if __name__ == "__main__":
